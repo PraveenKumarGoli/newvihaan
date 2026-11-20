@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Calculator, User, Phone, Mail, MapPin, Home, Building2, Ruler, FileText, CheckCircle2 } from 'lucide-react';
+import { Calculator, User, Phone, Mail, MapPin, Home, Building2, Ruler, FileText, CheckCircle2, TrendingDown, Zap } from 'lucide-react';
 import { useReveal } from '@/hooks/useReveal';
 
 type FormState = {
@@ -56,6 +56,16 @@ export default function SolarCalculator() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
+  const billToSystemSize: Record<string, string> = {
+    'Up to ₹2,000': '1–2 kW',
+    '₹2,000 – ₹5,000': '2–4 kW',
+    '₹5,000 – ₹10,000': '4–7 kW',
+    '₹10,000 – ₹25,000': '7–15 kW',
+    'Above ₹25,000': '15+ kW',
+  };
+  const estimatedSize = billToSystemSize[form.monthlyBill] ?? 'Select your bill range';
+  const estimatedOffset = form.monthlyBill ? (form.customerType === 'Commercial' ? 'Potentially offset a meaningful share of daytime consumption' : 'Potentially offset a meaningful share of household consumption') : 'Choose a bill range to see an estimate';
+
   return (
     <section id="calculator" className="section-pad bg-navy-900 relative overflow-hidden">
       {/* Decorative elements */}
@@ -79,6 +89,24 @@ export default function SolarCalculator() {
         </div>
 
         <div className="max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div className="rounded-2xl bg-navy-800 border border-navy-700 p-5">
+              <div className="flex items-center gap-2 text-gold-400 text-sm font-semibold mb-2">
+                <Zap className="w-4 h-4" />
+                Approximate system size
+              </div>
+              <p className="text-2xl font-bold text-white">{estimatedSize}</p>
+              <p className="text-xs text-navy-300 mt-1">Based on your selected monthly bill</p>
+            </div>
+            <div className="rounded-2xl bg-navy-800 border border-navy-700 p-5">
+              <div className="flex items-center gap-2 text-green-400 text-sm font-semibold mb-2">
+                <TrendingDown className="w-4 h-4" />
+                Potential energy impact
+              </div>
+              <p className="text-sm font-semibold text-white leading-relaxed">{estimatedOffset}</p>
+              <p className="text-xs text-navy-300 mt-1">Not a savings guarantee</p>
+            </div>
+          </div>
           {submitted ? (
             <div className="bg-navy-800 rounded-2xl p-8 md:p-12 text-center border border-gold-500/30">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 mb-4">

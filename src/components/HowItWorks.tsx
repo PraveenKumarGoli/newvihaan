@@ -11,13 +11,13 @@ export default function HowItWorks() {
           <p className="text-gold-600 font-semibold text-sm uppercase tracking-wider mb-2">
             How It Works
           </p>
-          <h2 className="section-title">Your Solar Journey in 5 Simple Steps</h2>
+          <h2 className="section-title">Your Solar Journey in 6 Simple Steps</h2>
           <p className="section-subtitle mx-auto">
             A clear, transparent process from first contact to long-term support.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
           {processSteps.map((step, i) => {
             const Icon = step.icon;
             return (

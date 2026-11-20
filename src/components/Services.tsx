@@ -1,9 +1,12 @@
-import { CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { services } from '@/data';
+import ServiceModal from './ServiceModal';
 import { useReveal } from '@/hooks/useReveal';
 
 export default function Services() {
   const { ref, visible } = useReveal();
+  const [selectedService, setSelectedService] = useState<(typeof services)[number] | null>(null);
 
   return (
     <section id="services" className="section-pad bg-white">
@@ -32,15 +35,33 @@ export default function Services() {
                 </div>
                 <h3 className="text-lg font-bold text-navy-900 mb-2">{service.title}</h3>
                 <p className="text-navy-500 text-sm leading-relaxed">{service.description}</p>
-                <div className="mt-5 flex items-center gap-2 text-gold-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Engineering-driven approach
+                <div className="mt-5 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-gold-600 font-semibold text-sm">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Engineering-driven approach
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedService(service)}
+                    className="inline-flex items-center gap-1 text-gold-600 font-semibold text-sm hover:gap-2 transition-all"
+                  >
+                    Learn More
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+      {selectedService && (
+        <ServiceModal
+          title={selectedService.title}
+          description={selectedService.description}
+          icon={selectedService.icon}
+          onClose={() => setSelectedService(null)}
+        />
+      )}
     </section>
   );
 }

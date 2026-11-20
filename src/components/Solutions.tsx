@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { solutions } from '@/data';
+import ServiceModal from './ServiceModal';
 import { useReveal } from '@/hooks/useReveal';
 
 export default function Solutions() {
   const { ref, visible } = useReveal();
+  const [selectedSolution, setSelectedSolution] = useState<(typeof solutions)[number] | null>(null);
 
   return (
     <section className="section-pad bg-navy-50">
@@ -44,19 +47,28 @@ export default function Solutions() {
                 </div>
                 <div className="p-5">
                   <p className="text-navy-500 text-sm leading-relaxed">{solution.description}</p>
-                  <a
-                    href="#contact"
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSolution(solution)}
                     className="mt-4 inline-flex items-center gap-1.5 text-gold-600 font-semibold text-sm hover:gap-2.5 transition-all"
                   >
                     Learn More
                     <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+      {selectedSolution && (
+        <ServiceModal
+          title={selectedSolution.title}
+          description={selectedSolution.description}
+          icon={selectedSolution.icon}
+          onClose={() => setSelectedSolution(null)}
+        />
+      )}
     </section>
   );
 }

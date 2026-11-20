@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { MapPin, Zap, Calendar, ImageOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { MapPin, Zap, Calendar, ImageOff, X } from 'lucide-react';
 import { projects, type ProjectCategory } from '@/data';
 import { useReveal } from '@/hooks/useReveal';
 
@@ -7,7 +7,21 @@ const categories: ('All' | ProjectCategory)[] = ['All', 'Residential', 'Group Ho
 
 export default function Projects() {
   const [filter, setFilter] = useState<'All' | ProjectCategory>('All');
+  const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
   const { ref, visible } = useReveal();
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedProject(null);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedProject]);
 
   const filtered = filter === 'All' ? projects : projects.filter((p) => p.type === filter);
 
@@ -49,7 +63,16 @@ export default function Projects() {
               className="group rounded-2xl overflow-hidden card card-hover"
               style={{ animation: `fadeInUp 0.5s ease-out ${i * 0.05}s both` }}
             >
-              <div className="relative h-56 overflow-hidden bg-navy-100">
+              <div
+                className="relative h-56 overflow-hidden bg-navy-100 cursor-zoom-in"
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${project.name} project image`}
+                onClick={() => setSelectedProject(project)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') setSelectedProject(project);
+                }}
+              >
                 <img
                   src={project.image}
                   alt={`${project.type} solar project at ${project.location}`}
@@ -89,6 +112,40 @@ export default function Projects() {
         <p className="text-center text-sm text-navy-400 mt-8">
           More projects will be showcased here as they are completed.
         </p>
+
+        {selectedProject && (
+          <div
+            className="fixed inset-0 z-[65] bg-navy-950/85 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8 animate-fade-in"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${selectedProject.type} project preview`}
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setSelectedProject(null);
+            }}
+          >
+            <div className="relative w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl animate-fade-in-up">
+              <button
+                type="button"
+                onClick={() => setSelectedProject(null)}
+                aria-label="Close project preview"
+                className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/90 text-navy-900 flex items-center justify-center hover:bg-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <img src={selectedProject.image} alt={`${selectedProject.type} solar project at ${selectedProject.location}`} className="w-full h-64 sm:h-[420px] object-cover" />
+              <div className="p-5 sm:p-7">
+                <span className="inline-flex px-3 py-1 rounded-full bg-gold-100 text-gold-700 text-xs font-bold mb-3">{selectedProject.type}</span>
+                <h3 className="text-2xl font-bold text-navy-900">{selectedProject.name}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-sm text-navy-600">
+                  <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gold-500" />{selectedProject.location}</span>
+                  <span className="flex items-center gap-2"><Zap className="w-4 h-4 text-gold-500" />{selectedProject.capacity}</span>
+                  <span className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gold-500" />{selectedProject.date}</span>
+                </div>
+                <p className="text-sm text-navy-500 mt-5">Project summary and additional installation photographs will be added here.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

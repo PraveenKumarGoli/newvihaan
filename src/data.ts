@@ -261,9 +261,15 @@ export const processSteps: ProcessStep[] = [
   },
   {
     number: '05',
+    icon: ShieldCheck,
+    title: 'Testing & Activation',
+    description: 'We test the system carefully before it is activated for use.',
+  },
+  {
+    number: '06',
     icon: Settings,
     title: 'Support & Maintenance',
-    description: 'We continue to assist you after installation.',
+    description: 'We continue to assist you after installation.'
   },
 ];
 
